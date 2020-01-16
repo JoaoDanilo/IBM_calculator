@@ -13,13 +13,56 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  TextEditingController weightController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
+  String _inforText = "Informe seus dados";
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+
+  void _resetField() {
+
+    weightController.text = "";
+    heightController.text = "";
+
+    setState(() {
+      _inforText = "Informe seus dados";
+    });
+    
+  }
+
+  void calculate() {
+    double weight = double.parse(weightController.text);
+    double height = double.parse(heightController.text)/100;
+
+    double ibm = weight / (height * height);
+
+    setState(() {
+      if(ibm < 18.6){
+        _inforText = "Abaixo do Peso (${ibm.toStringAsPrecision(4)})";
+      } else if(ibm >= 18.6 && ibm < 24.9){
+        _inforText = "Peso Ideal (${ibm.toStringAsPrecision(4)})";
+      } else if(ibm >= 24.9 && ibm < 29.9){
+        _inforText = "Levemente Acima do Peso (${ibm.toStringAsPrecision(4)})";
+      } else if(ibm >= 29.9 && ibm < 34.9){
+        _inforText = "Obesidade Grau I (${ibm.toStringAsPrecision(4)})";
+      } else if(ibm >= 34.9 && ibm < 39.9){
+        _inforText = "Obesidade Grau II (${ibm.toStringAsPrecision(4)})";
+      } else if(ibm >= 40){
+        _inforText = "Obesidade Grau III (${ibm.toStringAsPrecision(4)})";
+      }
+    });
+   
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("IBM calculator"), centerTitle: true, backgroundColor: Colors.green,
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.refresh), onPressed: () {},)
+          IconButton(icon: Icon(Icons.refresh), onPressed: () {_resetField();},)
         ],
       ),
       backgroundColor: Colors.white,
@@ -33,19 +76,21 @@ class _HomeState extends State<Home> {
                     decoration: InputDecoration(labelText: "Weight (Kg)", 
                                                 labelStyle: TextStyle(color: Colors.green)),
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.green, fontSize: 25),),
+                    style: TextStyle(color: Colors.green, fontSize: 25),
+                    controller: weightController,),
           TextField(keyboardType: TextInputType.number, 
                     decoration: InputDecoration(labelText: "Height (cm)", 
                                                 labelStyle: TextStyle(color: Colors.green)),
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.green, fontSize: 25),),
+                    style: TextStyle(color: Colors.green, fontSize: 25),
+                    controller: heightController,),
           Padding(padding: EdgeInsets.only(top:10, bottom: 10),
                   child: Container(height: 50,
-                                   child: RaisedButton(onPressed: () {}, 
+                                   child: RaisedButton(onPressed: calculate, 
                                                        child: Text("Compute", style: TextStyle(color: Colors.white, 
                                                                                                fontSize: 25),), 
                                                        color: Colors.green,)),),
-          Text("Info", textAlign: TextAlign.center, style: TextStyle(color: Colors.green, fontSize: 25),)
+          Text(_inforText, textAlign: TextAlign.center, style: TextStyle(color: Colors.green, fontSize: 25),)
         ],),),
     );
   }
